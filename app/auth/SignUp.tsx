@@ -26,17 +26,16 @@ const SignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log(user);
+
         if (user) {
           const result = await createNewUser({ name: name, email: email });
-          console.log(result);
           setUser(result);
         }
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        Alert.alert("Something went wrong", errorMessage);
       });
   };
 
