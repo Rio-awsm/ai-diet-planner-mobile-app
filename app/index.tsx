@@ -20,6 +20,7 @@ export default function Index() {
         email: userInfo?.email as string,
       });
       setUser(userData);
+      router.replace("/(tabs)/Home")
     });
     return () => unsubscribe()
   })
