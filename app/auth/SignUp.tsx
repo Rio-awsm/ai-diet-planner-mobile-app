@@ -1,13 +1,44 @@
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import { Link } from 'expo-router'
-import React from 'react'
-import { Image, Text, View } from 'react-native'
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import { UserContext } from "@/context/UserContext";
+import { api } from "@/convex/_generated/api";
+import { auth } from "@/services/firebaseConfig";
+import { useMutation } from "convex/react";
+import { Link } from "expo-router";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import React, { useContext, useState } from "react";
+import { Alert, Image, Text, View } from "react-native";
 
 const SignUp = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const createNewUser = useMutation(api.User.CreateNewUser);
+
+  const { user, setUser } = useContext(UserContext) as any;
+
   const onSignUp = () => {
-    console.log('Sign Up Pressed')
-  }
+    if (!name || !email || !password) {
+      Alert.alert("Missing Fields", "Please fill all the values!!");
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        if (user) {
+          const result = await createNewUser({ name: name, email: email });
+          console.log(result);
+          setUser(result);
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
+  };
 
   return (
     <View
@@ -35,12 +66,16 @@ const SignUp = () => {
           width: "100%",
         }}
       >
-        <Input placeholder={"Full name"} />
-        <Input placeholder={"Email"} />
-        <Input placeholder={"Password"} password={true} />
+        <Input placeholder={"Full name"} onChangeText={setName} />
+        <Input placeholder={"Email"} onChangeText={setEmail} />
+        <Input
+          placeholder={"Password"}
+          password={true}
+          onChangeText={setPassword}
+        />
       </View>
       <View style={{ width: "100%", marginTop: 20 }}>
-        <Button title="Sign Up" onPress={() => onSignUp()} />
+        <Button title="Create Account" onPress={() => onSignUp()} />
         <Text
           style={{
             textAlign: "center",
@@ -64,7 +99,7 @@ const SignUp = () => {
         </Link>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

@@ -4,12 +4,15 @@ import { TextInput } from "react-native";
 const Input = ({
   placeholder,
   password = false,
+  onChangeText
 }: {
   placeholder: string;
   password?: boolean;
+  onChangeText: (value: string) => void;
 }) => {
   return (
     <TextInput
+    onChangeText={(value) => onChangeText(value)}
       secureTextEntry={password}
       placeholder={placeholder}
       style={{

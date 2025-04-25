@@ -1,12 +1,18 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { Link } from "expo-router";
-import React from "react";
-import { Image, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, Image, Text, View } from "react-native";
 
 const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const onSignIn = () => {
-    console.log("Sign In Pressed");
+    if (!email || !password) {
+      Alert.alert("Missing Fields", "Please fill all the values!!");
+      return;
+    }
   };
 
   return (
@@ -35,8 +41,12 @@ const SignIn = () => {
           width: "100%",
         }}
       >
-        <Input placeholder={"Email"} />
-        <Input placeholder={"Password"} password={true} />
+        <Input placeholder={"Email"} onChangeText={setEmail} />
+        <Input
+          placeholder={"Password"}
+          password={true}
+          onChangeText={setPassword}
+        />
       </View>
       <View style={{ width: "100%", marginTop: 20 }}>
         <Button title="Sign In" onPress={() => onSignIn()} />
