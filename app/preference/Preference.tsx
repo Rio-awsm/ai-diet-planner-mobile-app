@@ -1,11 +1,56 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Colors from "@/constants/Colors";
+import { UserContext } from "@/context/UserContext";
+import { api } from "@/convex/_generated/api";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useMutation } from "convex/react";
+import { useRouter } from "expo-router";
+import React, { useContext, useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const Preference = () => {
+  const [weight, setWeight] = useState();
+  const [height, setHeight] = useState();
+  const [age, setAge] = useState();
+  const [gender, setGender] = useState("");
+  const [goal, setGoal] = useState("");
+  const { user, setUser } = useContext(UserContext) as any;
+  const router = useRouter()
+
+  const UpdateUserPreference = useMutation(api.User.UpdateUserPreference);
+
+  const OnContinue = async () => {
+    if (!weight || !height || !age || !gender) {
+      Alert.alert("Error", "Please fill all the fields");
+      return;
+    }
+
+    const data = {
+      uid: user?._id,
+      weight: weight,
+      height: height,
+      gender: gender,
+      age: age,
+      goal: goal,
+    };
+    const result = await UpdateUserPreference({
+      ...data,
+    });
+    setUser((prev: any) => ({
+      ...prev,
+      ...data,
+    }));
+    router.replace("/(tabs)/Home")
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Tell us about yourself</Text>
@@ -15,39 +60,71 @@ const Preference = () => {
 
       <View style={styles.rowContainer}>
         <View style={{ flex: 1 }}>
-          <Input placeholder={"eg. 5.10"} label="Height (feet)" />
+          <Input
+            placeholder={"eg. 5.10"}
+            label="Height (feet)"
+            onChangeText={setHeight}
+          />
         </View>
         <View style={{ flex: 1 }}>
-          <Input placeholder={"eg. 70"} label="Weight (Kg)" />
+          <Input
+            placeholder={"eg. 70"}
+            label="Weight (Kg)"
+            onChangeText={setWeight}
+          />
         </View>
       </View>
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Gender</Text>
         <View style={styles.rowContainer}>
-          <View style={[styles.genderOption]}>
+          <TouchableOpacity
+            onPress={() => setGender("Male")}
+            style={[
+              styles.genderOption,
+              gender === "Male" && styles.selectedOption,
+            ]}
+          >
             <Ionicons name="male" size={24} color="#007AFF" />
             <Text>Male</Text>
-          </View>
+          </TouchableOpacity>
 
-          <View style={[styles.genderOption]}>
+          <TouchableOpacity
+            onPress={() => setGender("Female")}
+            style={[
+              styles.genderOption,
+              gender === "Female" && styles.selectedOption,
+            ]}
+          >
             <Ionicons name="female" size={24} color="#FF2D55" />
             <Text>Female</Text>
-          </View>
+          </TouchableOpacity>
 
-          <View style={[styles.genderOption]}>
+          <TouchableOpacity
+            onPress={() => setGender("Other")}
+            style={[
+              styles.genderOption,
+              gender === "Other" && styles.selectedOption,
+            ]}
+          >
             <Ionicons name="person" size={24} color="#5856D6" />
             <Text>Other</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
-      <Input placeholder={"eg. 30"} label="Age (years)" />
+      <Input placeholder={"eg. 30"} label="Age (years)" onChangeText={setAge} />
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>What's your Goal?</Text>
         <View>
-          <View style={[styles.goalContainer]}>
+          <TouchableOpacity
+            style={[
+              styles.goalContainer,
+              goal === "Weight Loss" && styles.selectedOption,
+            ]}
+            onPress={() => setGoal("Weight Loss")}
+          >
             <View style={styles.goalHeader}>
               <MaterialCommunityIcons
                 name="weight-lifter"
@@ -57,9 +134,15 @@ const Preference = () => {
               <Text style={styles.goalText}>Weight Loss</Text>
             </View>
             <Text style={styles.goalSubText}>Reduce body fat & get leaner</Text>
-          </View>
+          </TouchableOpacity>
 
-          <View style={[styles.goalContainer]}>
+          <TouchableOpacity
+            style={[
+              styles.goalContainer,
+              goal === "Muscle Gain" && styles.selectedOption,
+            ]}
+            onPress={() => setGoal("Muscle Gain")}
+          >
             <View style={styles.goalHeader}>
               <MaterialCommunityIcons
                 name="arm-flex"
@@ -71,9 +154,15 @@ const Preference = () => {
             <Text style={styles.goalSubText}>
               Build strength & increase muscle mass
             </Text>
-          </View>
+          </TouchableOpacity>
 
-          <View style={[styles.goalContainer]}>
+          <TouchableOpacity
+            style={[
+              styles.goalContainer,
+              goal === "Weight Gain" && styles.selectedOption,
+            ]}
+            onPress={() => setGoal("Weight Gain")}
+          >
             <View style={styles.goalHeader}>
               <MaterialCommunityIcons
                 name="food-apple"
@@ -85,11 +174,11 @@ const Preference = () => {
             <Text style={styles.goalSubText}>
               Increase overall body weight healthily
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={{ marginTop: 10 }}>
-        <Button title="Continue" />
+        <Button title="Continue" onPress={OnContinue} />
       </View>
       <View style={{ height: 50 }} />
     </ScrollView>

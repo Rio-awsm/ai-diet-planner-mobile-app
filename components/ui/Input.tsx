@@ -10,7 +10,7 @@ const Input = ({
   placeholder: string;
   label?: string;
   password?: boolean;
-  onChangeText: (value: string) => void;
+  onChangeText: (value: any) => void;
 }) => {
   return (
     <View style={{ marginTop: 15, width: "100%" }}>
