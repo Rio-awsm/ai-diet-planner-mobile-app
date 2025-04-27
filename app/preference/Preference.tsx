@@ -3,6 +3,7 @@ import Input from "@/components/ui/Input";
 import Colors from "@/constants/Colors";
 import { UserContext } from "@/context/UserContext";
 import { api } from "@/convex/_generated/api";
+import { calculateNutritionNeeds } from "@/lib/CalorieCalculate";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
 import { useRouter } from "expo-router";
@@ -23,7 +24,7 @@ const Preference = () => {
   const [gender, setGender] = useState("");
   const [goal, setGoal] = useState("");
   const { user, setUser } = useContext(UserContext) as any;
-  const router = useRouter()
+  const router = useRouter();
 
   const UpdateUserPreference = useMutation(api.User.UpdateUserPreference);
 
@@ -41,8 +42,15 @@ const Preference = () => {
       age: age,
       goal: goal,
     };
+    console.log( "data",data);
+
+    //calculate calories
+    const nutritionResult = calculateNutritionNeeds(data)
+    const response = nutritionResult
+
     const result = await UpdateUserPreference({
       ...data,
+      ...response,
     });
     setUser((prev: any) => ({
       ...prev,

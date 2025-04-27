@@ -49,6 +49,8 @@ export const UpdateUserPreference = mutation({
     age: v.string(),
     gender: v.string(),
     goal: v.string(),
+    calories: v.number(),
+    proteins: v.number(),
   },
   handler: async (ctx, args) => {
     const result = await ctx.db.patch(args.uid, {
@@ -57,6 +59,8 @@ export const UpdateUserPreference = mutation({
       age: args.age,
       gender: args.gender,
       goal: args.goal,
+      calories: args.calories,
+      proteins: args.proteins,
     });
     return result
   },
