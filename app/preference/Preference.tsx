@@ -42,7 +42,6 @@ const Preference = () => {
       age: age,
       goal: goal,
     };
-    console.log( "data",data);
 
     //calculate calories
     const nutritionResult = calculateNutritionNeeds(data)
