@@ -1,7 +1,10 @@
+import GenerateMealRecipeCard from '@/components/GenerateMealRecipeCard'
+import HomeHeader from '@/components/HomeHeader'
+import TodayProgress from '@/components/TodayProgress'
 import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'expo-router'
 import React, { useContext, useEffect } from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 
 const Home = () => {
   const {user} = useContext(UserContext) as any
@@ -14,8 +17,10 @@ const Home = () => {
   }, [user])
 
   return (
-    <View>
-      <Text>Home</Text>
+    <View style={{padding: 20}}>
+      <HomeHeader />
+      <TodayProgress />
+      <GenerateMealRecipeCard />
     </View>
   )
 }
