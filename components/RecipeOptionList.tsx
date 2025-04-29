@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors";
 import { GENERATE_COMPLETE_RECIPE_PROMPT } from "@/constants/Prompts";
-import { AiGenerateRecipe } from "@/services/Aimodel";
+import { AIgeneratedIamge, AiGenerateRecipe } from "@/services/Aimodel";
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import LoadingDialouge from "./ui/LoadingDialouge";
@@ -27,9 +27,9 @@ const RecipeOptionList = ({ RecipieOptions }: any) => {
         ?.replace("```json", "")
         .replace("```", "");
       const parsedJson = JSON.parse(extractJson as string);
-      console.log(parsedJson);
-
-      //generate image
+      console.log(parsedJson.imagePrompt);
+      const aiImageResponse = await AIgeneratedIamge(parsedJson?.imagePrompt)
+      console.log(aiImageResponse?.data?.image);
       //save to db
       //redirect to recipe page
     } catch (error) {
