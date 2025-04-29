@@ -12,6 +12,7 @@ export default function Button({
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={title === "Generating..."}
       style={{
         padding: 15,
         backgroundColor: Colors.PRIMARY,

@@ -1,9 +1,11 @@
 import Colors from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 const GenerateMealRecipeCard = () => {
+  const router = useRouter();
   return (
     <LinearGradient
       colors={[Colors.YELLOW, Colors.PRIMARY]}
@@ -35,6 +37,7 @@ const GenerateMealRecipeCard = () => {
       </Text>
 
       <TouchableOpacity
+      onPress={() => router.push("/generate-ai-recipe/GenerateRecipe")}
         style={{
           padding: 12,
           backgroundColor: Colors.WHITE,
