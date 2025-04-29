@@ -43,7 +43,7 @@ const TodaysMealPlan = () => {
               marginBottom: 20,
             }}
           >
-            You Don't have any Meal Plan for Today
+            You Don't have any Meal Plan for Today.
           </Text>
           <Button title="Create New Meal Plan" />
         </View>
