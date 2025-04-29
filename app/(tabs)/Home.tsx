@@ -1,10 +1,11 @@
 import GenerateMealRecipeCard from '@/components/GenerateMealRecipeCard'
 import HomeHeader from '@/components/HomeHeader'
 import TodayProgress from '@/components/TodayProgress'
+import TodaysMealPlan from '@/components/TodaysMealPlan'
 import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'expo-router'
 import React, { useContext, useEffect } from 'react'
-import { View } from 'react-native'
+import { ScrollView } from 'react-native'
 
 const Home = () => {
   const {user} = useContext(UserContext) as any
@@ -17,11 +18,12 @@ const Home = () => {
   }, [user])
 
   return (
-    <View style={{padding: 20}}>
+    <ScrollView style={{padding: 20}} showsVerticalScrollIndicator={false}>
       <HomeHeader />
       <TodayProgress />
       <GenerateMealRecipeCard />
-    </View>
+      <TodaysMealPlan />
+    </ScrollView>
   )
 }
 

@@ -19,7 +19,7 @@ export default function Button({
         borderRadius: 10,
       }}
     >
-      <Text style={{ fontSize: 20, color: Colors.WHITE, textAlign: "center" }}>
+      <Text style={{ fontSize: 18, color: Colors.WHITE, textAlign: "center" }}>
         {title}
       </Text>
     </TouchableOpacity>
