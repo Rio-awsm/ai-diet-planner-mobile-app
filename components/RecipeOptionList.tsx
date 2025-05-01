@@ -1,13 +1,18 @@
 import Colors from "@/constants/Colors";
 import { GENERATE_COMPLETE_RECIPE_PROMPT } from "@/constants/Prompts";
+import { UserContext } from "@/context/UserContext";
+import { api } from "@/convex/_generated/api";
 import { AIgeneratedIamge, AiGenerateRecipe } from "@/services/Aimodel";
-import React, { useState } from "react";
+import { useMutation } from "convex/react";
+import React, { useContext, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import LoadingDialouge from "./ui/LoadingDialouge";
 
 const RecipeOptionList = ({ RecipieOptions }: any) => {
+  const { user } = useContext(UserContext) as any;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const createRecipe = useMutation(api.Recipes.CreateRecipes);
 
   const onRecipeSelect = async (recipe: any, index: number) => {
     setLoading(true);
@@ -27,10 +32,15 @@ const RecipeOptionList = ({ RecipieOptions }: any) => {
         ?.replace("```json", "")
         .replace("```", "");
       const parsedJson = JSON.parse(extractJson as string);
-      console.log(parsedJson.imagePrompt);
-      const aiImageResponse = await AIgeneratedIamge(parsedJson?.imagePrompt)
-      console.log(aiImageResponse?.data?.image);
+      const aiImageResponse = await AIgeneratedIamge(parsedJson?.imagePrompt);      
       //save to db
+      const saveRecipeResult = await createRecipe({
+        jsonData: parsedJson,
+        imageUrl: aiImageResponse?.data?.image,
+        recipeName: parsedJson.recipeName,
+        uid: user?._id,
+      });
+      console.log(saveRecipeResult);      
       //redirect to recipe page
     } catch (error) {
       console.log("Error in generating recipe", error);
