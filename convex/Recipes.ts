@@ -1,12 +1,12 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const CreateRecipes = mutation({
   args: {
     jsonData: v.any(),
-    imageUrl : v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
     uid: v.id("users"),
-    recipeName : v.string(),
+    recipeName: v.string(),
   },
   handler: async (ctx, args) => {
     const result = await ctx.db.insert("recipes", {
@@ -15,6 +15,16 @@ export const CreateRecipes = mutation({
       recipeName: args.recipeName,
       uid: args.uid,
     });
-    return result
+    return result;
+  },
+});
+
+export const getRecipeById = query({
+  args: {
+    id: v.id("recipes"),
+  },
+  handler: async (ctx, args) => {
+    const result = await ctx.db.get(args.id);
+    return result;
   },
 });

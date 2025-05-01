@@ -4,11 +4,13 @@ import { UserContext } from "@/context/UserContext";
 import { api } from "@/convex/_generated/api";
 import { AIgeneratedIamge, AiGenerateRecipe } from "@/services/Aimodel";
 import { useMutation } from "convex/react";
+import { useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import LoadingDialouge from "./ui/LoadingDialouge";
 
 const RecipeOptionList = ({ RecipieOptions }: any) => {
+  const router = useRouter()
   const { user } = useContext(UserContext) as any;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,9 +41,11 @@ const RecipeOptionList = ({ RecipieOptions }: any) => {
         imageUrl: aiImageResponse?.data?.image,
         recipeName: parsedJson.recipeName,
         uid: user?._id,
-      });
-      console.log(saveRecipeResult);      
-      //redirect to recipe page
+      });      
+      router.push({
+        pathname: "/recipe-detail/DetailRecipePage",
+        params: { recipeId: saveRecipeResult }
+      })
     } catch (error) {
       console.log("Error in generating recipe", error);
     }
