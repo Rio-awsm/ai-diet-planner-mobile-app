@@ -1,17 +1,17 @@
 import Colors from "@/constants/Colors";
 import {
-    Feather,
-    FontAwesome5,
-    MaterialCommunityIcons,
+  Feather,
+  FontAwesome5,
+  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-    Animated,
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const CookingSteps = ({ recipeDetail }: any) => {
