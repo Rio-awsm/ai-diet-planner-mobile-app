@@ -1,3 +1,4 @@
+import CookingSteps from '@/components/CookingSteps'
 import RecipeIngredients from '@/components/RecipeIngredients'
 import RecipeIntro from '@/components/RecipeIntro'
 import { api } from '@/convex/_generated/api'
@@ -20,6 +21,7 @@ const DetailRecipePage = () => {
         <ScrollView>
             <RecipeIntro recipeDetail={recipeDetail} />
             <RecipeIngredients recipeDetail={recipeDetail} />
+            <CookingSteps recipeDetail={recipeDetail} />
         </ScrollView>
     )
 }
