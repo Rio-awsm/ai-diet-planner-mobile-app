@@ -3,6 +3,7 @@ import { UserContext } from "@/context/UserContext";
 import { api } from "@/convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useConvex } from "convex/react";
+import { useRouter } from "expo-router";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -10,6 +11,7 @@ import Button from "./ui/Button";
 
 const TodaysMealPlan = () => {
   const [mealPlan, SetMealPlan] = useState<any>();
+  const router = useRouter()
   const { user } = useContext(UserContext) as any;
   const convex = useConvex();
   const GetTodaysMealPlan = async () => {
@@ -59,7 +61,12 @@ const TodaysMealPlan = () => {
         <View style={styles.recipeDetails}>
           <Text style={styles.recipeName}>{item.recipe.recipeName}</Text>
           <Text style={styles.CalorieText}>Calories : {item.recipe.jsonData.calories}</Text>
-          <TouchableOpacity style={styles.viewRecipeButton}>
+          <TouchableOpacity style={styles.viewRecipeButton} onPress={() => {
+            router.push({
+              pathname: "/added-recipe-deatil/AddedRecipeDetail",
+              params: { recipeId: item.recipe._id }
+            })
+          }}>
             <Text style={styles.viewRecipeText}>View Recipe</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.PRIMARY} />
           </TouchableOpacity>
