@@ -58,6 +58,7 @@ const TodaysMealPlan = () => {
         />
         <View style={styles.recipeDetails}>
           <Text style={styles.recipeName}>{item.recipe.recipeName}</Text>
+          <Text style={styles.CalorieText}>Calories : {item.recipe.jsonData.calories}</Text>
           <TouchableOpacity style={styles.viewRecipeButton}>
             <Text style={styles.viewRecipeText}>View Recipe</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.PRIMARY} />
@@ -162,6 +163,11 @@ const styles = StyleSheet.create({
   mealTypeText: {
     fontSize: 16,
     fontWeight: "600",
+    color: Colors.PRIMARY,
+  },
+  CalorieText: {
+    fontSize: 12,
+    fontWeight: "400",
     color: Colors.PRIMARY,
   },
   recipeContainer: {
