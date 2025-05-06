@@ -3,19 +3,22 @@ import RecipeIngredients from "@/components/RecipeIngredients";
 import RecipeIntro from "@/components/RecipeIntro";
 import Button from "@/components/ui/Button";
 import Colors from "@/constants/Colors";
+import { UserContext } from "@/context/UserContext";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const DetailRecipePage = () => {
   const { recipeId } = useLocalSearchParams();
+  const { user } = useContext(UserContext) as any;
+  const CreateMealPlan = useMutation(api.MealPlan.CreateMealPlan);
   const [open, setopen] = useState(false);
   const [dateList, setDateList] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedMeal, setSelectedMeal] = useState<string>("");
 
   const mealOptions = [
     { title: "🍵 Break Fast", value: "Breakfast" },
@@ -30,6 +33,21 @@ const DetailRecipePage = () => {
       result.push(nextDate);
     }
     setDateList(result);
+  };
+
+  const AddToMealPlan = async () => {
+    if (!selectedDate && !selectedMeal) {
+      Alert.alert("Error!", "Please select all details!");
+      return;
+    }
+    const result = await CreateMealPlan({
+      date: selectedDate,
+      mealType: selectedMeal,
+      recipeId: recipeDetail?._id,
+      uid: user?._id,
+    });
+    Alert.alert("Added!", "Added to meal plan");
+    setopen(false);
   };
 
   useEffect(() => {
@@ -169,7 +187,7 @@ const DetailRecipePage = () => {
             <View
               style={{ marginHorizontal: 20, marginBottom: 30, marginTop: 15 }}
             >
-              <Button title="Add To Meal Paln" />
+              <Button title="Add To Meal Paln" onPress={AddToMealPlan} />
             </View>
           </View>
         )}
