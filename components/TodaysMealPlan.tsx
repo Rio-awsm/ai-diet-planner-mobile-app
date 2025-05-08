@@ -6,12 +6,19 @@ import { useConvex } from "convex/react";
 import { useRouter } from "expo-router";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Button from "./ui/Button";
 
 const TodaysMealPlan = () => {
   const [mealPlan, SetMealPlan] = useState<any>();
-  const router = useRouter()
+  const router = useRouter();
   const { user } = useContext(UserContext) as any;
   const convex = useConvex();
   const GetTodaysMealPlan = async () => {
@@ -27,46 +34,105 @@ const TodaysMealPlan = () => {
   }, [user]);
 
   const getSortedMeals = () => {
-      if (!mealPlan) return [];
-      const mealOrder: { [key: string]: number } = { "Breakfast": 1, "Lunch": 2, "Dinner": 3, "Snack": 4 };
-      
-      return [...mealPlan].sort((a: any, b: any) => 
-        mealOrder[a.mealPlan.mealType as keyof typeof mealOrder] - mealOrder[b.mealPlan.mealType as keyof typeof mealOrder]
-      );
+    if (!mealPlan) return [];
+    const mealOrder: { [key: string]: number } = {
+      Breakfast: 1,
+      Lunch: 2,
+      Dinner: 3,
+      Snack: 4,
     };
 
-  const getMealIcon = (mealType : string) => {
-    switch(mealType) {
-      case "Breakfast": return "sunny";
-      case "Lunch": return "restaurant";
-      case "Dinner": return "moon";
-      case "Snack": return "nutrition";
-      default: return "restaurant";
+    return [...mealPlan].sort(
+      (a: any, b: any) =>
+        mealOrder[a.mealPlan.mealType as keyof typeof mealOrder] -
+        mealOrder[b.mealPlan.mealType as keyof typeof mealOrder]
+    );
+  };
+
+  const getMealIcon = (mealType: string) => {
+    switch (mealType) {
+      case "Breakfast":
+        return "sunny";
+      case "Lunch":
+        return "restaurant";
+      case "Dinner":
+        return "moon";
+      case "Snack":
+        return "nutrition";
+      default:
+        return "restaurant";
     }
   };
 
-  const renderMealCard = ({ item } : {item: any}) => (
+  const toggleMealStatus = async (
+    mealPlanId: string,
+    currentStatus: boolean | undefined,
+    calories: number
+  ) => {
+    const newStatus = currentStatus === true ? false : true;
+
+    await convex.mutation(api.MealPlan.MarkStatus, {
+      id: mealPlanId,
+      status: newStatus,
+      calories: calories,
+    });
+    GetTodaysMealPlan();
+  };
+
+  const renderMealCard = ({ item }: { item: any }) => (
     <View style={styles.mealCard}>
-      <View style={styles.mealTypeContainer}>
-        <Ionicons name={getMealIcon(item.mealPlan.mealType)} style={styles.mealTypeIcon} />
-        <Text style={styles.mealTypeText}>{item.mealPlan.mealType}</Text>
+      <View style={styles.mealHeader}>
+        <View style={styles.mealTypeContainer}>
+          <Ionicons
+            name={getMealIcon(item.mealPlan.mealType)}
+            style={styles.mealTypeIcon}
+          />
+          <Text style={styles.mealTypeText}>{item.mealPlan.mealType}</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.checkboxContainer}
+          onPress={() =>
+            toggleMealStatus(
+              item.mealPlan._id,
+              item.mealPlan.status,
+              item.recipe.jsonData.calories
+            )
+          }
+        >
+          <View
+            style={[
+              styles.checkbox,
+              item.mealPlan.status && styles.checkboxChecked,
+            ]}
+          >
+            {item.mealPlan.status && (
+              <Ionicons name="checkmark" size={16} color={Colors.WHITE} />
+            )}
+          </View>
+        </TouchableOpacity>
       </View>
-      
+
       <View style={styles.recipeContainer}>
-        <Image 
-          source={{ uri: item.recipe.imageUrl }} 
-          style={styles.recipeImage} 
+        <Image
+          source={{ uri: item.recipe.imageUrl }}
+          style={styles.recipeImage}
           resizeMode="cover"
         />
         <View style={styles.recipeDetails}>
           <Text style={styles.recipeName}>{item.recipe.recipeName}</Text>
-          <Text style={styles.CalorieText}>Calories : {item.recipe.jsonData.calories}</Text>
-          <TouchableOpacity style={styles.viewRecipeButton} onPress={() => {
-            router.push({
-              pathname: "/added-recipe-deatil/AddedRecipeDetail",
-              params: { recipeId: item.recipe._id }
-            })
-          }}>
+          <Text style={styles.CalorieText}>
+            Calories : {item.recipe.jsonData.calories}
+          </Text>
+          <TouchableOpacity
+            style={styles.viewRecipeButton}
+            onPress={() => {
+              router.push({
+                pathname: "/added-recipe-deatil/AddedRecipeDetail",
+                params: { recipeId: item.recipe._id },
+              });
+            }}
+          >
             <Text style={styles.viewRecipeText}>View Recipe</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.PRIMARY} />
           </TouchableOpacity>
@@ -75,20 +141,21 @@ const TodaysMealPlan = () => {
     </View>
   );
 
+  const handleCreateMealPlan = () => {
+    router.push("/");
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Today's Meal Plan</Text>
 
-      {!mealPlan ? (
+      {!mealPlan || mealPlan.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons
-            name="restaurant"
-            style={styles.emptyIcon}
-          />
+          <Ionicons name="restaurant" style={styles.emptyIcon} />
           <Text style={styles.emptyText}>
             You don't have any meal plan for today.
           </Text>
-          <Button title="Create New Meal Plan" />
+          <Button title="Create New Meal Plan" onPress={handleCreateMealPlan} />
         </View>
       ) : (
         <View style={styles.mealPlanContainer}>
@@ -157,10 +224,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  mealHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   mealTypeContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
   },
   mealTypeIcon: {
     fontSize: 20,
@@ -171,6 +243,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: Colors.PRIMARY,
+  },
+  checkboxContainer: {
+    padding: 4,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.PRIMARY,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+  },
+  checkboxChecked: {
+    backgroundColor: Colors.PRIMARY,
   },
   CalorieText: {
     fontSize: 12,
